@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create a Group | Prayer & Fasting</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #4b6cb7;
+      background: linear-gradient(to right, #182848, #4b6cb7);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    main {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+    .checkbox-label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      background: #4b6cb7;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3b5998;
+    }
+    .back-link {
+      display: block;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .back-link a {
+      text-decoration: none;
+      color: #4b6cb7;
+    }
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+    legend {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Create a Group</h1>
+    <p>Please fill out the form below to start a new group. Be aware the group will automatically be deleted if inactive for a 90 day period.</p>
+  </header>
+
+  <main>
+    <form id="group-form">
+      <label for="group-name">Group Name</label>
+      <input type="text" id="group-name" name="group-name" required />
+
+      <fieldset>
+        <legend>Start / End Dates</legend>
+
+        <label for="start-date" style="font-weight: normal;">Start Date</label>
+        <input type="date" id="start-date" name="start-date" required />
+
+        <label for="end-date" style="font-weight: normal; margin-top: 1rem;">End Date</label>
+        <input type="date" id="end-date" name="end-date" required />
+      </fieldset>
+
+      <label for="description">Prayer Details (optional)</label>
+      <textarea id="description" name="description" rows="4"></textarea>
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="editable" name="editable" />
+        Allow Prayer Details to be editable by group members
+      </label>
+
+      <button type="submit">Create Group</button>
+    </form>
+
+    <div class="back-link">
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </main>
+
+  <script>
+    const GROUP_KEY = 'prayer_groups';
+    const form = document.getElementById('group-form');
+    const EXPIRATION_DAYS = 90;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('group-name').value.trim();
+      const start = document.getElementById('start-date').value;
+      const end = document.getElementById('end-date').value;
+      const description = document.getElementById('description').value.trim();
+      const editable = document.getElementById('editable').checked;
+      const timestamp = new Date().getTime();
+
+      const newGroup = { name, start, end, description, editable, timestamp };
+
+      let groups = JSON.parse(localStorage.getItem(GROUP_KEY)) || [];
+      groups = groups.filter(g => timestamp - g.timestamp < EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
+      groups.push(newGroup);
+
+      localStorage.setItem(GROUP_KEY, JSON.stringify(groups));
+      alert('Group created successfully!');
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>

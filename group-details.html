@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Group Details | Prayer & Fasting</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #4b6cb7;
+      background: linear-gradient(to right, #182848, #4b6cb7);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    main {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .detail {
+      margin-bottom: 1rem;
+    }
+    .label {
+      font-weight: bold;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .back-link a {
+      text-decoration: none;
+      color: #4b6cb7;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Group Details</h1>
+    <p>Prayer & Fasting Group Information</p>
+  </header>
+
+  <main id="group-details">
+    <p>Loading group details...</p>
+  </main>
+
+  <div class="back-link">
+    <a href="find-group.html">← Back to Find Groups</a>
+  </div>
+
+  <script>
+    const group = JSON.parse(localStorage.getItem('selected_group'));
+    const container = document.getElementById('group-details');
+
+    if (!group) {
+      container.innerHTML = '<p style="color: red;">No group selected. Please go back and select a group.</p>';
+    } else {
+      container.innerHTML = `
+        <h2>${group.name}</h2>
+        <div class="detail"><span class="label">Dates:</span> ${group.start} to ${group.end}</div>
+        ${group.description ? `<div class="detail"><span class="label">Description:</span> ${group.description}</div>` : ''}
+      `;
+    }
+  </script>
+
+</body>
+</html>

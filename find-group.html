@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find a Group | Prayer & Fasting</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #4b6cb7;
+      background: linear-gradient(to right, #182848, #4b6cb7);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    main {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .controls input,
+    .controls select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .group {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #4b6cb7;
+      background: #eef2f7;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .group:hover {
+      background: #dde3ee;
+    }
+    .group h3 {
+      margin-top: 0;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .back-link a {
+      text-decoration: none;
+      color: #4b6cb7;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Find a Group</h1>
+    <p>Search for a prayer and fasting group</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <input type="text" id="search-input" placeholder="Search by group name..." />
+      <select id="sort-select">
+        <option value="asc">Sort A–Z</option>
+        <option value="desc">Sort Z–A</option>
+      </select>
+    </div>
+
+    <div id="group-list"></div>
+  </main>
+
+  <div class="back-link">
+    <a href="index.html">← Back to Home</a>
+  </div>
+
+  <script>
+    const GROUP_KEY = 'prayer_groups';
+    const SELECTED_KEY = 'selected_group';
+    const EXPIRATION_DAYS = 90;
+    const groupList = document.getElementById('group-list');
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+
+    function loadGroups() {
+      const raw = localStorage.getItem(GROUP_KEY);
+      let groups = raw ? JSON.parse(raw) : [];
+      const now = new Date().getTime();
+      return groups.filter(g => now - g.timestamp < EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
+    }
+
+    function renderGroups(groups) {
+      groupList.innerHTML = '';
+      if (groups.length === 0) {
+        groupList.innerHTML = '<p>No matching groups found.</p>';
+        return;
+      }
+
+      groups.forEach(group => {
+        const div = document.createElement('div');
+        div.className = 'group';
+        div.innerHTML = `
+          <h3>${group.name}</h3>
+          <p><strong>Dates:</strong> ${group.start} to ${group.end}</p>
+          ${group.description ? `<p><strong>Description:</strong> ${group.description}</p>` : ''}
+        `;
+        div.onclick = () => {
+          localStorage.setItem(SELECTED_KEY, JSON.stringify(group));
+          window.location.href = 'group-calendar.html';
+        };
+        groupList.appendChild(div);
+      });
+    }
+
+    function filterAndSortGroups() {
+      const searchText = searchInput.value.toLowerCase().trim();
+      if (searchText === '') {
+        groupList.innerHTML = '';
+        return;
+      }
+
+      let groups = loadGroups();
+
+      // Show only matches that start with or exactly match the typed name
+      groups = groups.filter(g => {
+        const name = g.name.toLowerCase();
+        return name === searchText || name.startsWith(searchText);
+      });
+
+      const sortOrder = sortSelect.value;
+      groups.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        return sortOrder === 'asc'
+          ? nameA.localeCompare(nameB)
+          : nameB.localeCompare(nameA);
+      });
+
+      renderGroups(groups);
+    }
+
+    searchInput.addEventListener('input', filterAndSortGroups);
+    sortSelect.addEventListener('change', filterAndSortGroups);
+  </script>
+
+</body>
+</html>
