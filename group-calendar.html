@@ -61,6 +61,10 @@
       cursor: pointer;
       background-color: #fff3cd;
       color: #856404;
+      transition: background-color 0.3s ease;
+    }
+    .slot:hover {
+      background-color: #ffeeba;
     }
     .slot.taken {
       background-color: #4b6cb7;
@@ -136,10 +140,19 @@
         ['Morning', 'Midday', 'Evening'].forEach(time => {
           const slot = document.createElement('div');
           slot.className = 'slot';
-          slot.textContent = `${time} Available`;
+          const key = `${year}-${month + 1}-${day}-${time}`;
+          const saved = localStorage.getItem(key);
+          if (saved === 'taken') {
+            slot.classList.add('taken');
+            slot.textContent = `${time} Taken`;
+          } else {
+            slot.textContent = `${time} Available`;
+          }
+
           slot.onclick = () => {
             const taken = slot.classList.toggle('taken');
             slot.textContent = `${time} ${taken ? 'Taken' : 'Available'}`;
+            localStorage.setItem(key, taken ? 'taken' : 'available');
           };
           dayBox.appendChild(slot);
         });
@@ -163,4 +176,5 @@
     renderCalendar(currentYear, currentMonth);
   </script>
 
-</
+</body>
+</html>
