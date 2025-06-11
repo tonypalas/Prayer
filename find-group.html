@@ -120,7 +120,7 @@
         div.innerHTML = `
           <h3>${group.name}</h3>
           <p><strong>Dates:</strong> ${group.start} to ${group.end}</p>
-          ${group.description ? `<p><strong>Description:</strong> ${group.description}</p>` : ''}
+
         `;
         div.onclick = () => {
           localStorage.setItem(SELECTED_KEY, JSON.stringify(group));
